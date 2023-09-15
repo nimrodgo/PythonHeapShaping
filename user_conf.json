@@ -1,0 +1,9 @@
+{
+    "games": [
+        {
+            "name": "baba",
+            "settings": "$global_settings",
+            "version": "1.0"
+        }
+    ]
+}
