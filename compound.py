@@ -1,36 +1,37 @@
+from __future__ import annotations
 import heapq
 import functools
-from typing import Any
+from typing import Any, Mapping
 
 @functools.total_ordering
 class DictItem:
-    def __init__(self, key, value):
+    def __init__(self, key: str, value: Any):
         self.key = key
         self.value = value
 
-    def __lt__(self, other):
+    def __lt__(self, other: DictItem) -> bool:
         return self.key < other.key
 
-    def __eq__(self, other):
+    def __eq__(self, other: DictItem) -> bool:
         return self.key == other.key
 
     def __iter__(self):
         yield self.key
         yield self.value
     
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'DictItem({self.key}, {self.value})'
 
 
 class HeapDict:
-    def __init__(self, items=None):
+    def __init__(self, items: list[DictItem] = None):
         self._items = items if items else []
         heapq.heapify(self._items)
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: str, value: Any):
         heapq.heappush(self._items, DictItem(key, value))
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: str) -> Any:
         return self._items[self._items.index(DictItem(key, None))].value
 
     def items(self):
@@ -40,11 +41,11 @@ class HeapDict:
         for key, _ in self._items:
             yield key
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'HeapDict({self._items})'
 
 class Compound:
-    def __init__(self, data, *, parent=None, filter=lambda _: None):
+    def __init__(self, data: Mapping[str, Any], *, parent: Compound = None, filter=lambda _: None):
         self._underlying_dict = HeapDict()
         self._parent = parent
         self._filter = filter
@@ -52,25 +53,21 @@ class Compound:
             self._underlying_dict[key] = self._as_item(data[key])
         self.init = True
 
-    def __setattr__(self, name, value):
+    def __setattr__(self, name: str, value: Any):
         if 'init' in self.__dict__:
             self.merge_to(name, value)
         else:
             self.__dict__[name] = value
 
-    def ancestor(self):
+    def ancestor(self) -> Compound:
         result = self
         while result._parent:
             result = result._parent
         return result
 
-    def __getattr__(self, name):
-        '''
-        Simplify pathing, so a.b in config will lead to the right place
-        '''
+    def __getattr__(self, name: str) -> Any:
         if not name:
             return self
-
 
         splitted = name.rsplit('.', 1)
         parent = self if len(splitted) == 1 else getattr(self, splitted[0])
@@ -86,16 +83,13 @@ class Compound:
 
         return item
 
-    def merge_to(self, path, other):
-        '''
-        merges two entries, returns whether the result was changed
-        '''
+    def merge_to(self, path: str, other: Compound):
         parent = getattr(self, path)
         for key, value in other._underlying_dict.items():
             self._filter(key)
             parent._underlying_dict[key] = parent._as_item(value)
 
-    def _as_item(self, new_value):
+    def _as_item(self, new_value: Any) -> Any:
         if isinstance(new_value, Compound):
             return Compound(new_value._underlying_dict, parent=self, filter=self._filter)
         if isinstance(new_value, dict):
@@ -105,8 +99,8 @@ class Compound:
         return new_value
 
     @staticmethod
-    def load_from_dict(json_object, filter=lambda _: None):
+    def load_from_dict(source: dict, *, filter=lambda _: None) -> Compound:
         result = Compound({}, filter=filter)
-        for key, value in json_object.items():
+        for key, value in source.items():
             result._underlying_dict[key] = result._as_item(value)
         return result
