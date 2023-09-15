@@ -1,4 +1,5 @@
 import json
+from flask import Flask, request
 import games
 from compound import Compound
 
@@ -32,14 +33,17 @@ def run_user_config(user_config):
         game_type = getattr(config.games, game.name)
         game_type(game.version, game.settings)
 
+app = Flask(__name__)
 
-def main():
+@app.route('/run')
+def run():
+    if not request.json:
+        return 'No JSON', 400
     try:
-        with open('user_conf.json') as f:
-            run_user_config(json.load(f))
+        run_user_config(request.json)
+        return 'GG', 200
     except Exception as e:
-        print(e)
-
+        return str(e), 400
 
 if __name__ == '__main__':
-    main()
+    app.run()

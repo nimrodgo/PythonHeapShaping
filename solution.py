@@ -1,5 +1,4 @@
-import json
-import subprocess
+import requests
 from itertools import zip_longest
 from functools import reduce
 
@@ -29,9 +28,7 @@ def main():
     flag = ''
     while not flag or flag[-1] != '}':
         flag = bits_to_str(flag_bits + [1])
-        with open('user_conf.json', 'w') as f:
-            json.dump(generate_config(flag), f)
-        out = subprocess.run('py -3 run.py', capture_output=True).stdout.decode()
+        out = requests.get('http://localhost:5000/run', json=generate_config(flag)).content.decode()
         if 'You will not use the flag' in out:
             flag_bits.append(0)
         elif 'You will not even reach the flag' in out:
