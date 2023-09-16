@@ -46,7 +46,7 @@ class HeapDict(Mapping[str, Any]):
             yield key
 
     def __contains__(self, key):
-        return DictItem(key, None) in self._items
+        return key in iter(self)
 
     def __repr__(self) -> str:
         return f'HeapDict({self._items})'
