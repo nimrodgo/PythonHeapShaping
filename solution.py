@@ -2,6 +2,7 @@ import requests
 from itertools import zip_longest
 from functools import reduce
 
+
 def generate_config(flag):
     return {
         'games': [
@@ -17,6 +18,7 @@ def generate_config(flag):
             }
         ]
     }
+
 
 def bits_to_str(bits):
     s_bytes = zip_longest(*([iter(bits)] * 8), fillvalue=0)

@@ -26,14 +26,16 @@ BASE_CONFIG = {
 
 
 def run_user_config(user_config):
-    config = Compound.load_from_dict(BASE_CONFIG, filter=is_allowed)
+    config = Compound.load_from_dict(BASE_CONFIG, input_filter=is_allowed)
     config.user = Compound.load_from_dict(user_config)
 
     for game in config.user.games:
         game_type = getattr(config.games, game.name)
         game_type(game.version, game.settings)
 
+
 app = Flask(__name__)
+
 
 @app.route('/run')
 def run():
@@ -44,6 +46,7 @@ def run():
         return 'GG', 200
     except Exception as e:
         return str(e), 400
+
 
 if __name__ == '__main__':
     app.run()
