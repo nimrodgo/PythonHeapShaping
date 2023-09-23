@@ -38,13 +38,13 @@ app = Flask(__name__)
 
 @app.route('/run')
 def run():
-    if not request.json:
-        return 'No JSON', 400
-    try:
-        run_user_config(request.json)
-        return 'GG', 200
-    except Exception as e:
-        return str(e), 400
+    run_user_config(request.json)
+    return 'GG', 200
+
+
+@app.errorhandler(500)
+def server_error(e):
+    return str(e.original_exception), 500
 
 
 if __name__ == '__main__':
