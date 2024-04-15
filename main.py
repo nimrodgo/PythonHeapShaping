@@ -26,7 +26,7 @@ BASE_CONFIG = {
 
 def run_user_config(user_config):
     config = Compound.load_from_dict(BASE_CONFIG, input_filter=is_allowed)
-    config.user = Compound.load_from_dict(user_config)
+    config.user = Compound.load_from_dict(user_config, input_filter=is_allowed)
 
     for game in config.user.games:
         game_type = getattr(config.games, game.name)
