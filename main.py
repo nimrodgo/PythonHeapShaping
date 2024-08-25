@@ -1,8 +1,7 @@
 from flask import Flask, request
-import games
+import operations
 from compound import Compound
-
-FLAG = 'CTF{This is an example flag}'
+from flag import FLAG
 
 
 def is_allowed(s):
@@ -14,31 +13,34 @@ def is_allowed(s):
         raise ValueError('The admin directory is a no-no')
 
 
-BASE_CONFIG = {
+DATABASE = {
     'admin': {'flag': FLAG},
     'global_settings': {'volume': 100},
-    'games': {
-        'baba': games.BabaIsYou,
-        'spire': games.SlayTheSpire
+    'operations': {
+        'verify': operations.verify
+    },
+    'public': {
+        'version': '1.0.0',
+        'author': 'Nimi'
     }
 }
 
 
-def run_user_config(user_config):
-    config = Compound.load_from_dict(BASE_CONFIG, input_filter=is_allowed)
-    config.user = Compound.load_from_dict(user_config, input_filter=is_allowed)
+def run_query(request):
+    config = Compound.load_from_dict(DATABASE, input_filter=is_allowed)
+    config.user = Compound.load_from_dict(request, input_filter=is_allowed)
 
-    for game in config.user.games:
-        game_type = getattr(config.games, game.name)
-        game_type(game.version, game.settings)
+    for query in config.user.queries:
+        database_function = getattr(config.operations, query.name)
+        database_function(query.data, query.auth)
 
 
 app = Flask(__name__)
 
 
-@app.route('/run')
-def run():
-    run_user_config(request.json)
+@app.route('/query')
+def query():
+    run_query(request.json)
     return 'GG', 200
 
 

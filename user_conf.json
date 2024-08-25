@@ -1,9 +1,12 @@
 {
     "games": [
         {
-            "name": "baba",
-            "settings": "$global_settings",
-            "version": "1.0"
+            "name": "verify",
+            "data": {
+                "path": "public.version",
+                "value": "1.0.0"
+            },
+            "auth": "$auth.no_auth"
         }
     ]
 }

