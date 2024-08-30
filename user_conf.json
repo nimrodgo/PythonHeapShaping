@@ -1,12 +1,9 @@
 {
-    "games": [
+    "queries": [
         {
-            "name": "verify",
-            "data": {
-                "path": "public.version",
-                "value": "1.0.0"
-            },
-            "auth": "$auth.no_auth"
+            "name": "video",
+            "file_name": "space_cat",
+            "data": "$public.space"
         }
     ]
 }

