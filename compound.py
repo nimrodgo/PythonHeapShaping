@@ -30,6 +30,8 @@ class HeapDict(Mapping[str, Any]):
         heapq.heapify(self._items)
 
     def __setitem__(self, key: str, value: Any):
+        if key in self:
+            self._items[self._items.index(DictItem(key, None))].value = value
         heapq.heappush(self._items, DictItem(key, value))
 
     def __getitem__(self, key: str) -> Any:

@@ -3,13 +3,14 @@ from base64 import b64encode
 import operations
 from compound import Compound
 from flag import FLAG
-from functools import partial
 from functools import wraps
 
 
 def is_allowed(s):
     if isinstance(s, str):
         s = s.encode()
+    if not isinstance(s, bytes):
+        raise ValueError('Only bytes and strings are allowed')
     if FLAG.encode() in s:
         raise ValueError('You will not use the flag')
     if b'flag' in s:
@@ -26,6 +27,7 @@ USER_DATA = {
 def upload_wrapper(upload_func):
     @wraps(upload_func)
     def func(name, data):
+        is_allowed(name)
         is_allowed(data)
         return upload_func(USER_DATA, name, data)
 
@@ -88,4 +90,4 @@ def server_error(e):
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0')
