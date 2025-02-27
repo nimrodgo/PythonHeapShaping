@@ -1,9 +1,9 @@
 {
-    "games": [
+    "queries": [
         {
-            "name": "baba",
-            "settings": "$global_settings",
-            "version": "1.0"
+            "name": "video",
+            "file_name": "space_cat",
+            "data": "$public.space"
         }
     ]
 }
